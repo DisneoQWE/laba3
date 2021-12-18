@@ -19,18 +19,15 @@ QMap<QString, double> SortFolders::getFoldersPercentOfTotal(qint64& totalSize, Q
 	QMap<QString, double> foldersListPercentage;
     double percent;
 	for (auto it = FoldersList.begin(); it != FoldersList.end(); ++it) {
-        if (it.value() == 0) {
-            percent = 0.0;
-        }
-        else
-        {
+        if (totalSize != 0) {
             percent = double(it.value() * 100) / totalSize;
             // метка для слишком маленьких папок
-            if (percent < 0.01)
+            if (percent < 0.01 && percent != 0)
                 percent = -percent;
+        } else {
+            percent = 0;
         }
         foldersListPercentage.insert(it.key(), percent);
-
 	}
 	return foldersListPercentage;
 }
@@ -38,7 +35,7 @@ QMap<QString, double> SortFolders::getFoldersPercentOfTotal(qint64& totalSize, Q
 QList<QPair<double, QString>> sortByPercent(const QMap<QString, double>& FoldersAndPercentage)
 {
     QList<QPair<double, QString>> sortedMap;
-    for (auto x : FoldersAndPercentage.keys()) {
+    for (const auto& x : FoldersAndPercentage.keys()) {
       sortedMap.append(QPair<double, QString>(FoldersAndPercentage[x], x));
     }
     // Пропускаем корневую папку
@@ -62,31 +59,49 @@ QMap<QString, qint64> SortFolders::getFoldersSizes(const QString& path) const
 	}
     return FoldersList;
 }
-
 void SortFolders::PrintFoldersSizesAndPercentage(const QMap<QString, qint64>& FoldersAndTypes, const QList<QPair<double, QString> >& FoldersAndPercentage) const
 {
     QTextStream out(stdout);
     for (auto&& x : FoldersAndPercentage) {
-            out << qSetFieldWidth(45) << x.second << qSetFieldWidth(10)  << FoldersAndTypes.value(x.second) / 1024.0
-                      << qSetFieldWidth(4)<< "KB";
+            out.setFieldAlignment(QTextStream::AlignLeft);
+            out << qSetFieldWidth(45) << x.second <<
+            qSetFieldWidth(10)  << FoldersAndTypes.value(x.second) / 1024.0 <<
+            qSetFieldWidth(3) << "KB";
             if (x.first < 0) {
-                out << qSetFieldWidth(8) << "< 0.01 %\n";
+                out << qSetFieldWidth(7) << "< 0.01 %" << qSetFieldWidth(0) << Qt::endl;
             } else
-                out << qSetFieldWidth(8) << QString::number(x.first, 'f', 2).append(" %") << "\n";
+                out << qSetFieldWidth(7) << QString::number(x.first, 'f', 2).append(" %") << qSetFieldWidth(0) << Qt::endl;
     }
+    out.reset();
 }
 
-void SortFolders::explore(const QString& path)
+QList<Data> SortFolders::CombineData(const QMap<QString, qint64> &FoldersAndTypes, const QList<QPair<double, QString> > &FoldersAndPercentage) const
+{
+    QList<Data> data;
+    for (auto&& x : FoldersAndPercentage) {
+        if (x.first < 0) {
+            data.push_back(Data(x.second, QString::number(FoldersAndTypes.value(x.second)), QString("< 0.01 %")));
+        } else {
+            data.push_back(Data(x.second, QString::number(FoldersAndTypes.value(x.second)), QString::number(x.first, 'f', 2).append(" %")));
+        }
+    }
+    return data;
+}
+
+QList<Data> SortFolders::explore(const QString& path)
 {
     QFileInfo folder(path);
     if (!folder.exists() && !folder.isReadable()){
         qDebug() << "Error! Folder doesn't exist or it's symlink" << Qt::endl;
-        return;
+        return QList<Data>(); // empty data or return error
     }
     auto FoldersList = getFoldersSizes(path);
     auto totalSize = Common::sumSizes(FoldersList);
     auto FoldersPercentage = getFoldersPercentOfTotal(totalSize, FoldersList);
     auto sortedFoldersPercentage = sortByPercent(FoldersPercentage);
-    PrintFoldersSizesAndPercentage(FoldersList, sortedFoldersPercentage);
+//    PrintFoldersSizesAndPercentage(FoldersList, sortedFoldersPercentage);
+
+    auto data = CombineData(FoldersList, sortedFoldersPercentage);
+    return data;
 }
 
