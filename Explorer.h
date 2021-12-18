@@ -4,11 +4,26 @@
 #include <QFileInfo>
 #include <QTextStream>
 #include "Data.h"
+#include "FileBrowserObserver.h"
 
 class ExploreInterface {
 public:
-    virtual QList<Data> explore(const QString& path) = 0;
+    virtual void explore(const QString& path) = 0;
     virtual ~ExploreInterface() {}
+
+    // привязка наблюдателя
+    void Attach(FileBrowserObserver* observer) {
+        if (observer)
+            observer_ = observer;
+    }
+
+    // событие окончания формирования данных
+    void OnFinish(const std::unique_ptr<QList<Data> >& data) const {
+        observer_->UpdateDisplay(data);
+    }
+
+private:
+    FileBrowserObserver* observer_;
 };
 
 class Explorer
@@ -18,14 +33,15 @@ private:
 public:
     Explorer() = default;
     explicit Explorer(ExploreInterface* l) : p(l) {}
-    QList<Data> explore(const QString& path) {
-        return p->explore(path);
+    void explore(const QString& path) {
+        p->explore(path);
     }
     void setStrategy(ExploreInterface* strategy) {
         if (p)
             delete p;
         p = strategy;
     }
+
     ~Explorer() { if (p) delete p; }
 };
 

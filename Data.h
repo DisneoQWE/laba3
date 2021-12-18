@@ -7,8 +7,10 @@ struct Data
     QString _name;
     QString _size;
     QString _percent;
-    Data(const QString& name, const QString& size, const QString& percent)
-                : _name(name), _size(size), _percent(percent) {}
+    qreal _ratio; // отношение размера эл-та на размер папки
+
+    Data(const QString& name, const QString& size, const QString& percent, qreal ratio)
+                : _name(name), _size(size), _percent(percent), _ratio(ratio) {}
 };
 
-#endif
+#endif // DATA_H

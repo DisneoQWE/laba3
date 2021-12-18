@@ -7,8 +7,8 @@ class SortFolders final : public ExploreInterface
 {
 public:
     explicit SortFolders() = default;
-    virtual ~SortFolders() = default;
-    QList<Data> explore(const QString& path) override;
+    virtual ~SortFolders() {}
+    void explore(const QString& path) override;
 private:
     QMap<QString, qint64> getFoldersSizes(const QString& path) const;
     QMap<QString, double> getFoldersPercentOfTotal(qint64& totalSize, QMap<QString, qint64>& FoldersList) const;

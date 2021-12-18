@@ -52,11 +52,12 @@ QList<QPair<double, QString>> SortTypes::sortByPercent(const QMap<QString, doubl
 QList<Data> SortTypes::CombineData(const QMap<QString, qint64> &FileTypesList, const QList<QPair<double, QString> > &FileTypesPercantage)
 {
     QList<Data> data;
+    auto totalSize = Common::sumSizes(FileTypesList);
     for (auto&& x : FileTypesPercantage) {
         if (x.first < 0) {
-            data.push_back(Data(x.second, QString::number(FileTypesList.value(x.second)), QString("< 0.01 %")));
+            data.push_back(Data(x.second, QString::number(FileTypesList.value(x.second)), QString("< 0.01 %"), (qreal)FileTypesList.value(x.second)/ totalSize));
         } else {
-        data.push_back(Data("*." + x.second, QString::number(FileTypesList.value(x.second)), QString::number(x.first, 'f', 2).append(" %")));
+        data.push_back(Data("*." + x.second, QString::number(FileTypesList.value(x.second)), QString::number(x.first, 'f', 2).append(" %"), (qreal)FileTypesList.value(x.second)/ totalSize));
         }
     }
     return data;
@@ -83,16 +84,16 @@ void SortTypes::PrintFileTypesListAndPercents(const QMap<QString, qint64>& FileT
 }
 
 
-QList<Data> SortTypes::explore(const QString& path)
+void SortTypes::explore(const QString& path)
 {
     QDir folder(path);
     if (!folder.exists() && !folder.isReadable()) {
         qDebug() << "Error! Folder doesn't exist or it's symlink" << Qt::endl;
-        return QList<Data>();
+        return;
     }
     if (folder.isEmpty()) {
         qDebug() << "Folder is empty!" << Qt::endl;
-        return QList<Data>();
+        return;
     }
     QMap<QString, qint64> fileTypesList;
     getFileTypesAndSizes(path, fileTypesList);
@@ -101,6 +102,6 @@ QList<Data> SortTypes::explore(const QString& path)
     auto sortedFileTypesPercantage = sortByPercent(fileTypesPercantage);
 //    PrintFileTypesListAndPercents(fileTypesList, sortedFileTypesPercantage);
     auto data = CombineData(fileTypesList, sortedFileTypesPercantage);
-    return data;
+    OnFinish(std::make_unique<QList<Data> >(data));
 }
 

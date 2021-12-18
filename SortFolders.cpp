@@ -43,7 +43,7 @@ QList<QPair<double, QString>> sortByPercent(const QMap<QString, double>& Folders
     return sortedMap;
 }
 
-QMap<QString, qint64> SortFolders::getFoldersSizes(const QString& path) const
+QMap<QString, qint64> SortFolders::getFoldersSizes(const QString& path) const 
 {
     QFileInfo folder(path);
     // Создаем QMap содержащий полный путь папки и её размер
@@ -78,22 +78,23 @@ void SortFolders::PrintFoldersSizesAndPercentage(const QMap<QString, qint64>& Fo
 QList<Data> SortFolders::CombineData(const QMap<QString, qint64> &FoldersAndTypes, const QList<QPair<double, QString> > &FoldersAndPercentage) const
 {
     QList<Data> data;
+    auto totalSize = Common::sumSizes(FoldersAndTypes);
     for (auto&& x : FoldersAndPercentage) {
         if (x.first < 0) {
-            data.push_back(Data(x.second, QString::number(FoldersAndTypes.value(x.second)), QString("< 0.01 %")));
+            data.push_back(Data(x.second, QString::number(FoldersAndTypes.value(x.second)), QString("< 0.01 %"), (qreal)FoldersAndTypes.value(x.second)/ totalSize));
         } else {
-            data.push_back(Data(x.second, QString::number(FoldersAndTypes.value(x.second)), QString::number(x.first, 'f', 2).append(" %")));
+            data.push_back(Data(x.second, QString::number(FoldersAndTypes.value(x.second)), QString::number(x.first, 'f', 2).append(" %"),(qreal)FoldersAndTypes.value(x.second)/ totalSize));
         }
     }
     return data;
 }
 
-QList<Data> SortFolders::explore(const QString& path)
+void SortFolders::explore(const QString& path)
 {
     QFileInfo folder(path);
     if (!folder.exists() && !folder.isReadable()){
         qDebug() << "Error! Folder doesn't exist or it's symlink" << Qt::endl;
-        return QList<Data>(); // empty data or return error
+        return;// empty data or return error
     }
     auto FoldersList = getFoldersSizes(path);
     auto totalSize = Common::sumSizes(FoldersList);
@@ -102,6 +103,6 @@ QList<Data> SortFolders::explore(const QString& path)
 //    PrintFoldersSizesAndPercentage(FoldersList, sortedFoldersPercentage);
 
     auto data = CombineData(FoldersList, sortedFoldersPercentage);
-    return data;
+    OnFinish(std::make_unique<QList<Data> >(data));
 }
 

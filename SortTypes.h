@@ -5,8 +5,8 @@
 class SortTypes : public ExploreInterface {
 public:
     explicit SortTypes() = default;
-    virtual ~SortTypes() = default;
-    QList<Data> explore(const QString& path) override;
+    virtual ~SortTypes() {}
+    void explore(const QString& path) override;
 private:
     void getFileTypesAndSizes(const QString& path, QMap<QString, qint64>& FileTypesList);
     QMap<QString, double> getFileTypesPercentOfTotal(qint64& totalSize, QMap<QString, qint64>& FileTypesList) const;
