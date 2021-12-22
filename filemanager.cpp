@@ -4,7 +4,7 @@
 #include "SortTypes.h"
 #include "SortFolders.h"
 #include "FileBrowserModel.h"
-#include "ListViewAdapter.h"
+#include "ListViewMediator.h"
 #include "Charts.h"
 
 #include <QDebug>
@@ -19,11 +19,11 @@ FileManager::FileManager(QWidget *parent) :
     ui->setupUi(this);
     dirModel = new QFileSystemModel(this);
 
-    list_view_adapter = new ListViewAdapter(ui->stackedWidget->layout());
+    list_view = new ListViewMediator(ui->stackedWidget->layout());
     pie_chart = new PieChart(ui->stackedWidget->layout());
     bar_chart = new BarChart(ui->stackedWidget->layout());
 
-    FileBrowserView = list_view_adapter;
+    FileBrowserView = list_view;
     groupingStrategy->Attach(FileBrowserView);
     this->setMinimumSize(1200, 500);
     dirModel->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Hidden);
@@ -43,7 +43,7 @@ FileManager::~FileManager()
     delete dirModel;
 
     // очищаем память из под адаптеров
-    delete list_view_adapter;
+    delete list_view;
     delete pie_chart;
     delete bar_chart;
 
@@ -63,10 +63,11 @@ void FileManager::displayTableModel()
 
 void FileManager::selectionDisplay(int index)
 {
+    QList<Data> data = FileBrowserView->data();
     switch(index)
     {
         case 0:
-            FileBrowserView = list_view_adapter;
+            FileBrowserView = list_view;
             break;
         case 1:
             FileBrowserView = pie_chart;
@@ -76,7 +77,7 @@ void FileManager::selectionDisplay(int index)
             break;
     }
     groupingStrategy->Attach(FileBrowserView);
-    groupingStrategy->explore(path);
+    FileBrowserView->UpdateDisplay(data);
     ui->stackedWidget->setCurrentIndex(index);
 }
 

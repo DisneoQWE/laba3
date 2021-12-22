@@ -22,18 +22,20 @@ public:
     Charts() = default;
     Charts(QLayout* l);
 
-    void setChart(const std::unique_ptr<QList<Data>>& data) const;
+    void setChart(const QList<Data>& data) const;
 
     // добавление данных в диаграмму
     void addWidgetToLayout(QLayout* l);
-    void UpdateDisplay(const std::unique_ptr<QList<Data> > &data) const override;
-    void setDataToChart(const std::unique_ptr<QList<Data>>& data) const;
+    void UpdateDisplay(const QList<Data>& data) override;
+    void setDataToChart(const QList<Data>& data) const;
     void removeSeriesFromChart(QChart* c) const;
-    virtual QAbstractSeries* addDataToSeries(const std::unique_ptr<QList<Data>>& data) const = 0;
+    virtual QAbstractSeries* addDataToSeries(const QList<Data>& data) const = 0;
     void addSeriesToChart(QAbstractSeries* series) const;
+    QList<Data> data() const override { return chart_data; }
 private:
     QChartView* chart_view;
     QChart* chart_model;
+    QList<Data> chart_data;
 };
 
 // создание круговой диаграммы
@@ -42,7 +44,7 @@ class PieChart : public Charts
 public:
     explicit PieChart(QLayout* l);
     PieChart() = default;
-    QAbstractSeries * addDataToSeries(const std::unique_ptr<QList<Data> > &data) const override;
+    QAbstractSeries * addDataToSeries(const QList<Data> &data) const override;
 };
 
 //создание вертикальной диаграммы
@@ -51,7 +53,7 @@ class BarChart : public Charts
 public:
     explicit BarChart(QLayout* l);
     BarChart() = default;
-    QAbstractSeries * addDataToSeries(const std::unique_ptr<QList<Data> > &data) const override;
+    QAbstractSeries * addDataToSeries(const QList<Data> &data) const override;
 };
 
 #endif // CHARTSWIDGET_H

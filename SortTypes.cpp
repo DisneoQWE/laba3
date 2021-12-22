@@ -76,9 +76,9 @@ void SortTypes::PrintFileTypesListAndPercents(const QMap<QString, qint64>& FileT
                qSetFieldWidth(10) << FileTypesList.value(x.second) / 1024.0 <<
                qSetFieldWidth(3) << "KB";
                     if (x.first < 0) {
-                        out << qSetFieldWidth(7) << "< 0.01 %" << qSetFieldWidth(0) << Qt::endl;
+                        out << qSetFieldWidth(7) << "< 0.01 %" << qSetFieldWidth(0) << endl;
                     } else
-                        out << qSetFieldWidth(7) << QString::number(x.first, 'f', 2).append(" %") << qSetFieldWidth(0) << Qt::endl;;
+                        out << qSetFieldWidth(7) << QString::number(x.first, 'f', 2).append(" %") << qSetFieldWidth(0) << endl;;
     }
     out.reset();
 }
@@ -88,11 +88,11 @@ void SortTypes::explore(const QString& path)
 {
     QDir folder(path);
     if (!folder.exists() && !folder.isReadable()) {
-        qDebug() << "Error! Folder doesn't exist or it's symlink" << Qt::endl;
+        qDebug() << "Error! Folder doesn't exist or it's symlink" << endl;
         return;
     }
     if (folder.isEmpty()) {
-        qDebug() << "Folder is empty!" << Qt::endl;
+        qDebug() << "Folder is empty!" << endl;
         return;
     }
     QMap<QString, qint64> fileTypesList;
@@ -102,6 +102,6 @@ void SortTypes::explore(const QString& path)
     auto sortedFileTypesPercantage = sortByPercent(fileTypesPercantage);
 //    PrintFileTypesListAndPercents(fileTypesList, sortedFileTypesPercantage);
     auto data = CombineData(fileTypesList, sortedFileTypesPercantage);
-    OnFinish(std::make_unique<QList<Data> >(data));
+    OnFinish(QList<Data>(data));
 }
 

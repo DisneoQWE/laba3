@@ -43,9 +43,9 @@ private:
     ExploreInterface* TypesGrouping;
     ExploreInterface* groupingStrategy;
 
-      // адаптеры
+      // наблюдатели
     FileBrowserObserver* FileBrowserView;
-    FileBrowserObserver* list_view_adapter;
+    FileBrowserObserver* list_view;
     FileBrowserObserver* pie_chart;
     FileBrowserObserver* bar_chart;
 

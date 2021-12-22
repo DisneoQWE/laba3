@@ -21,7 +21,7 @@ public:
     explicit FileBrowserModel(const QList<Data>& data, QObject* parent = nullptr);
     void setModelData(const QList<Data>& data);
     ~FileBrowserModel() = default;
-
+    QList<Data> getData() const { return _data; }
 
     // методы необходимые для переопределения
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;

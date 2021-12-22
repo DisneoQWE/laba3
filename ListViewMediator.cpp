@@ -1,9 +1,9 @@
-#include "ListViewAdapter.h"
+#include "ListViewMediator.h"
 #include "Explorer.h"
 #include <QLayout>
 #include <QHeaderView>
 
-ListViewAdapter::ListViewAdapter(QLayout* l)
+ListViewMediator::ListViewMediator(QLayout* l)
 {
     model = new FileBrowserModel();
     view = new QTableView();
@@ -13,13 +13,18 @@ ListViewAdapter::ListViewAdapter(QLayout* l)
     l->addWidget(view);
 }
 
-void ListViewAdapter::UpdateDisplay(const std::unique_ptr<QList<Data> > &data) const
+void ListViewMediator::UpdateDisplay(const QList<Data> &data)
 {
-    model->setModelData(*data);
+    model->setModelData(data);
 }
 
-ListViewAdapter::~ListViewAdapter()
+ListViewMediator::~ListViewMediator()
 {
     delete model;
     delete view;
+}
+
+QList<Data> ListViewMediator::data() const
+{
+    return model->getData();
 }

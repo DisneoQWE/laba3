@@ -43,7 +43,7 @@ QList<QPair<double, QString>> sortByPercent(const QMap<QString, double>& Folders
     return sortedMap;
 }
 
-QMap<QString, qint64> SortFolders::getFoldersSizes(const QString& path) const 
+QMap<QString, qint64> SortFolders::getFoldersSizes(const QString& path) const
 {
     QFileInfo folder(path);
     // Создаем QMap содержащий полный путь папки и её размер
@@ -68,9 +68,9 @@ void SortFolders::PrintFoldersSizesAndPercentage(const QMap<QString, qint64>& Fo
             qSetFieldWidth(10)  << FoldersAndTypes.value(x.second) / 1024.0 <<
             qSetFieldWidth(3) << "KB";
             if (x.first < 0) {
-                out << qSetFieldWidth(7) << "< 0.01 %" << qSetFieldWidth(0) << Qt::endl;
+                out << qSetFieldWidth(7) << "< 0.01 %" << qSetFieldWidth(0) << endl;
             } else
-                out << qSetFieldWidth(7) << QString::number(x.first, 'f', 2).append(" %") << qSetFieldWidth(0) << Qt::endl;
+                out << qSetFieldWidth(7) << QString::number(x.first, 'f', 2).append(" %") << qSetFieldWidth(0) << endl;
     }
     out.reset();
 }
@@ -93,7 +93,7 @@ void SortFolders::explore(const QString& path)
 {
     QFileInfo folder(path);
     if (!folder.exists() && !folder.isReadable()){
-        qDebug() << "Error! Folder doesn't exist or it's symlink" << Qt::endl;
+        qDebug() << "Error! Folder doesn't exist or it's symlink" << endl;
         return;// empty data or return error
     }
     auto FoldersList = getFoldersSizes(path);
@@ -103,6 +103,6 @@ void SortFolders::explore(const QString& path)
 //    PrintFoldersSizesAndPercentage(FoldersList, sortedFoldersPercentage);
 
     auto data = CombineData(FoldersList, sortedFoldersPercentage);
-    OnFinish(std::make_unique<QList<Data> >(data));
+    OnFinish(QList<Data>(data));
 }
 

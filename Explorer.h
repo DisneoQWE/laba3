@@ -18,7 +18,7 @@ public:
     }
 
     // событие окончания формирования данных
-    void OnFinish(const std::unique_ptr<QList<Data> >& data) const {
+    void OnFinish(const QList<Data>& data) const {
         observer_->UpdateDisplay(data);
     }
 
