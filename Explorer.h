@@ -22,6 +22,12 @@ public:
               observer_.push_back(observer);
     }
 
+    //отписка наблюдателя
+    void Detach(){
+        if(!observer_.isEmpty())
+            observer_.removeLast();
+    }
+
     // событие окончания формирования данных
     void OnFinish(const QList<Data>& data) const {
         for (auto& x : observer_)
