@@ -24,7 +24,8 @@ FileManager::FileManager(QWidget *parent) :
     observers.push_back(new BarChart(ui->stackedWidget->layout()));
 
     for (auto& x : observers) {
-        groupingStrategy->Attach(x);
+        FolderGrouping->Attach(x);
+        TypesGrouping->Attach(x);
     }
     this->setMinimumSize(1200, 500);
     dirModel->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Hidden);
@@ -65,9 +66,6 @@ void FileManager::selectionDisplay(int index)
 
 void FileManager::selectionGroup(int index)
 {
-    for (auto& x : observers) {
-        groupingStrategy->Detach(x);
-    }
     switch (index) {
         case 0:
             groupingStrategy = FolderGrouping;
@@ -78,9 +76,6 @@ void FileManager::selectionGroup(int index)
         default:
             std::exit(-1);
             break;
-    }
-    for (auto& x : observers) {
-        groupingStrategy->Attach(x);
     }
     groupingStrategy->explore(path);
 }
