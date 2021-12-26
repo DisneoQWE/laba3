@@ -23,8 +23,3 @@ ListViewMediator::~ListViewMediator()
     delete model;
     delete view;
 }
-
-QList<Data> ListViewMediator::data() const
-{
-    return model->getData();
-}

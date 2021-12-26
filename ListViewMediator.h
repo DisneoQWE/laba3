@@ -13,7 +13,6 @@ private:
 public:
     explicit ListViewMediator(QLayout* l);
     ~ListViewMediator();
-    QList<Data> data() const override;
     void UpdateDisplay(const QList<Data> &data) override;
 };
 

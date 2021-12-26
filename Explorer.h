@@ -9,31 +9,28 @@
 class ExploreInterface {
 public:
     virtual void explore(const QString& path) = 0;
-    virtual ~ExploreInterface() {
-        for(auto& x : observer_) {
-            if (x)
-                delete x;
-        }
-    }
+    virtual ~ExploreInterface() { }
 
     // привязка наблюдателя
     void Attach(FileBrowserObserver* observer) {
         if (observer)
               observer_.push_back(observer);
     }
-
-    //отписка наблюдателя
-    void Detach(){
-        if(!observer_.isEmpty())
-            observer_.removeLast();
+    void Detach(FileBrowserObserver* observer) {
+        if (observer)
+            observer_.removeOne(observer);
     }
-
     // событие окончания формирования данных
     void OnFinish(const QList<Data>& data) const {
         for (auto& x : observer_)
             x->UpdateDisplay(data);
     }
-
+    void OverSub(FileBrowserObserver* observer) {
+        if (observer) {
+            observer_.removeOne(observer);
+            observer_.push_back(observer);
+        }
+    }
 private:
     QList<FileBrowserObserver*> observer_;
 };

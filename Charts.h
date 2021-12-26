@@ -31,11 +31,9 @@ public:
     void removeSeriesFromChart(QChart* c) const;
     virtual QAbstractSeries* addDataToSeries(const QList<Data>& data) const = 0;
     void addSeriesToChart(QAbstractSeries* series) const;
-    QList<Data> data() const override { return chart_data; }
 private:
     QChartView* chart_view;
     QChart* chart_model;
-    QList<Data> chart_data;
 };
 
 // создание круговой диаграммы

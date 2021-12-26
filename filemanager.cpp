@@ -19,15 +19,13 @@ FileManager::FileManager(QWidget *parent) :
     ui->setupUi(this);
     dirModel = new QFileSystemModel(this);
 
-//    list_view = new ListViewMediator(ui->stackedWidget->layout());
-//    pie_chart = new PieChart(ui->stackedWidget->layout());
-//    bar_chart = new BarChart(ui->stackedWidget->layout());
     observers.push_back(new ListViewMediator(ui->stackedWidget->layout()));
     observers.push_back(new PieChart(ui->stackedWidget->layout()));
     observers.push_back(new BarChart(ui->stackedWidget->layout()));
 
-    FileBrowserView = observers.front();
-    groupingStrategy->Attach(FileBrowserView);
+    for (auto& x : observers) {
+        groupingStrategy->Attach(x);
+    }
     this->setMinimumSize(1200, 500);
     dirModel->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Hidden);
     dirModel->setRootPath(QDir::currentPath());
@@ -45,10 +43,6 @@ FileManager::~FileManager()
     delete ui;
     delete dirModel;
 
-    // очищаем память из под адаптеров
-//    delete list_view;
-//    delete pie_chart;
-//    delete bar_chart;
     qDeleteAll(observers);
     delete FolderGrouping;
     delete TypesGrouping;
@@ -66,15 +60,14 @@ void FileManager::displayTableModel()
 
 void FileManager::selectionDisplay(int index)
 {
-    QList<Data> data = FileBrowserView->data();
-    FileBrowserView = observers[index];
-    groupingStrategy->Attach(FileBrowserView);
-    FileBrowserView->UpdateDisplay(data);
     ui->stackedWidget->setCurrentIndex(index);
 }
 
 void FileManager::selectionGroup(int index)
 {
+    for (auto& x : observers) {
+        groupingStrategy->Detach(x);
+    }
     switch (index) {
         case 0:
             groupingStrategy = FolderGrouping;
@@ -86,7 +79,9 @@ void FileManager::selectionGroup(int index)
             std::exit(-1);
             break;
     }
-    groupingStrategy->Attach(FileBrowserView);
+    for (auto& x : observers) {
+        groupingStrategy->Attach(x);
+    }
     groupingStrategy->explore(path);
 }
 
@@ -97,4 +92,5 @@ void FileManager::selectionChanged(const QItemSelection &selected, const QItemSe
     QModelIndexList indexes = selected.indexes();
     path = dirModel->filePath(indexes[0]);
     groupingStrategy->explore(path);
+
 }

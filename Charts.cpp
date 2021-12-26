@@ -65,7 +65,6 @@ void Charts::addWidgetToLayout(QLayout *l)
 
 void Charts::UpdateDisplay(const QList<Data>& data)
 {
-    chart_data = data;
     setChart(data);
 }
 

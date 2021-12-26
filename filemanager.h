@@ -44,10 +44,6 @@ private:
     ExploreInterface* groupingStrategy;
 
       // наблюдатели
-    FileBrowserObserver* FileBrowserView;
-    FileBrowserObserver* list_view;
-    FileBrowserObserver* pie_chart;
-    FileBrowserObserver* bar_chart;
     QList<FileBrowserObserver*> observers;
 
     QString path;
